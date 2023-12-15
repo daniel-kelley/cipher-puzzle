@@ -1,3 +1,14 @@
 Cipher Puzzle
 
 Simple Cipher Puzzle Booklet Generator
+
+* description
+
+Takes a YAML file of phrases to encipher and creates SVG files
+of enciphered output and HTML files of answers.
+
+See example/buttercup.yml for the input format
+
+* dependencies
+
+| victor | SVG generation |
