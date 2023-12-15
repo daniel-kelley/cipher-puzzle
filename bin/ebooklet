@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+#
+# Encipher booklet
+
+require_relative '../lib/encipher'
+
+exit(Encipher.encipher_booklet(ARGV))

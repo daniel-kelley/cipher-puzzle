@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/encipher'
+#srand(1)
+Encipher.encipher_file ARGV[0]
