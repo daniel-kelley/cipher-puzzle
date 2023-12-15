@@ -1,0 +1,23 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: head
+    - name: prep
+      run: |
+        gem install victor
+    - name: check-1
+      run: bin/encipher example/buttercup.yml
+    - name: check-2
+      run: bin/ebooklet example/buttercup.yml
