@@ -139,10 +139,20 @@ class Booklet
     LAYOUT[@layout][:subpage_per_page]
   end
 
+  # return true if all lines are blank
+  def only_whitespace?(item)
+    a = item.split("\n")
+    n = 0
+    a.each do |line|
+      n += 1 if !(line =~ /^\s*$/).nil?
+    end
+    n == a.length
+  end
+
   def scan
     data = File.open(@file) { |yf| YAML::load(yf) }
     data.each do |item|
-      next if item =~ /^\s*$/
+      next if only_whitespace?(item)
       @quote << encipher(item)
     end
   end
