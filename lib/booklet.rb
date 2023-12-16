@@ -159,8 +159,8 @@ class Booklet
 
   def encipher(text)
     puts "encipher(#{text})" if @debug
-    c = Cipher.new
-    [text, c.encipher(text).upcase, c.clue(text)]
+    c = Cipher.new(text)
+    [text, c.crypt.upcase, c.clue]
   end
 
   def content(n)
