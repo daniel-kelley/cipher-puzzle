@@ -25,6 +25,7 @@ class Booklet
       :line_limit => 4.0,
       :subpage_per_page => 4,
       :char_style => "font-size:0.25;font-family:'URW Bookman'",
+      :clue_style => "font-size:0.12;font-family:'URW Bookman'",
       :guide => [
         # vertical
         [  0.500,  0.000,  0.500,  0.250],
@@ -50,6 +51,7 @@ class Booklet
       :line_limit => 4.5,
       :subpage_per_page => 2,
       :char_style => "font-size:0.25;font-family:'URW Bookman'",
+      :clue_style => "font-size:0.12;font-family:'URW Bookman'",
       :guide => [
         # vertical
         [  0.500,  0.000,  0.500,  0.250],
@@ -125,6 +127,10 @@ class Booklet
 
   def char_style
     LAYOUT[@layout][:char_style]
+  end
+
+  def clue_style
+    LAYOUT[@layout][:clue_style]
   end
 
   def line_limit
@@ -214,7 +220,11 @@ class Booklet
 
   def layout_clue(svg, text, x, y)
     s = "Clue: " + short_clue(text)
-    svg.text(s, x: x, y: x, style: char_style)
+    svg.text(s,
+             transform:"translate(#{x}, #{y}) rotate(180)",
+             "text-anchor":"middle",
+             "dominant-baseline":"central",
+             style:clue_style)
   end
 
   def guide_marks(svg)
@@ -282,12 +292,12 @@ class Booklet
 
       #svg.text(spc,         x: 6.5, y: 6.5, style: char_style)
       layout_quote(svg, spc,   4.7,    6.0)
-      layout_clue( svg, clc,   3.0,   10.5) if !clc.nil?
+      layout_clue( svg, clc,   3.0,   10.0) if !clc.nil?
       svg.text("#{c}", x: 6.3, y: 10.5, style: char_style)
 
       #svg.text(spd,         x: 1.0, y: 6.5, style: char_style)
       layout_quote(svg, spd,   0.5,    6.0)
-      layout_clue( svg, cld,   7.7,   10.5) if !cld.nil?
+      layout_clue( svg, cld,   7.7,   10.0) if !cld.nil?
       svg.text("#{d}", x: 2.1, y: 10.5, style: char_style)
 
       #svg.text("a:#{a} b:#{b} c:#{c} d:#{d}",
@@ -341,12 +351,12 @@ class Booklet
       svg = Victor::SVG.new(page_attr)
       #svg.text(spa,         x: 1.0, y: 1.0, style: char_style)
       layout_quote(svg, spa,   0.5,    1.0)
-      layout_clue( svg, cla,   5.5,    0.5) if !cla.nil?
+      layout_clue( svg, cla,   7.5,    4.0) if !cla.nil?
       svg.text("#{a}", x: 2.75, y: 8.0, style: char_style) # page
 
       #svg.text(spb,         x: 6.5, y: 1.0, style: char_style)
       layout_quote(svg, spb,   6.0,    1.0)
-      layout_clue( svg, clb,  10.5,    0.5) if !clb.nil?
+      layout_clue( svg, clb,  10.5,    7.5) if !clb.nil?
       svg.text("#{b}", x: 8.25, y: 8.0, style: char_style)
 
       guide_marks(svg)
