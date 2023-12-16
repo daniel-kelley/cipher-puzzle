@@ -7,7 +7,6 @@
 require 'optparse'
 require 'yaml'
 require 'victor'
-#require 'ttfunk'
 require_relative 'cipher'
 
 class Booklet
@@ -72,6 +71,7 @@ class Booklet
     @quote = []
     @layout = "four_up"
     @help = false
+    @debug = false
     @argv = argv
 
     options
@@ -99,6 +99,9 @@ class Booklet
       end
       opts.on('--seed [SEED]', '-S', 'Random Seed') do |arg|
         @seed = arg.nil? ? 1 : arg.to_i
+      end
+      opts.on('--debug', '-d', 'Debug') do
+        @debug = true
       end
     end
     @opts.parse!(@argv)
@@ -136,15 +139,26 @@ class Booklet
     LAYOUT[@layout][:subpage_per_page]
   end
 
+  # return true if all lines are blank
+  def only_whitespace?(item)
+    a = item.split("\n")
+    n = 0
+    a.each do |line|
+      n += 1 if !(line =~ /^\s*$/).nil?
+    end
+    n == a.length
+  end
+
   def scan
     data = File.open(@file) { |yf| YAML::load(yf) }
     data.each do |item|
-      next if item =~ /^\s*$/
+      next if only_whitespace?(item)
       @quote << encipher(item)
     end
   end
 
   def encipher(text)
+    puts "encipher(#{text})" if @debug
     c = Cipher.new
     [text, c.encipher(text).upcase, c.clue(text)]
   end
@@ -172,26 +186,26 @@ class Booklet
     cur_y = y
     a = []
     quote = []
-    #puts "#{text} #{x} #{y}"
+    puts "#{text} #{x} #{y}" if @debug
     # newline preservation: substitute newlines for magic char seqence
     txt = text.gsub("\n", " #{NL_MAGIC} ")
     txt.split.each do |word|
-      #puts "--#{word} #{x} #{y}"
+      puts "--#{word} #{x} #{y}" if @debug
       if (cur_x > limit || word == NL_MAGIC)
-        #puts "------#{a.inspect} #{start} #{cur_y}"
+        puts "------#{a.inspect} #{start} #{cur_y}"  if @debug
         quote << [a.join(" "), start, cur_y]
         cur_x = x
         cur_y += char_height*3 # space for writing cleartext
         a.clear
       end
-      #puts "----#{word}"
+      puts "----#{word}" if @debug
       if word != NL_MAGIC
         a << word
         cur_x += (word.length+1)*char_width
       end
     end
     if a.length > 0
-        #puts "------#{a.inspect} #{start} #{cur_y}"
+        puts "------#{a.inspect} #{start} #{cur_y}" if @debug
         quote << [a.join(" "), start, cur_y]
     end
     quote.each do |line|
@@ -236,8 +250,10 @@ class Booklet
       side = n.even? ? "f" : "b"
       name = "#{@base}-#{sheet_no}-#{side}"
       puts "  #{n} #{name}"
-      #puts "#{n}: #{a} #{b} #{c} #{d}"
-      #puts "#{n}: #{content(a)} #{content(b)} #{content(c)} #{content(d)}"
+      if @debug
+        puts "#{n}: #{a} #{b} #{c} #{d}"
+        puts "#{n}: #{content(a)} #{content(b)} #{content(c)} #{content(d)}"
+      end
       spa = content(a)
       spb = content(b)
       spc = content(c)
@@ -302,8 +318,10 @@ class Booklet
       side = n.even? ? "f" : "b"
       name = "#{@base}-#{sheet_no}-#{side}"
       puts "  #{n} #{name}"
-      #puts "#{n}: #{a} #{b} #{c} #{d}"
-      #puts "#{n}: #{content(a)} #{content(b)} #{content(c)} #{content(d)}"
+      if @debug
+        puts "#{n}: #{a} #{b} #{c} #{d}"
+        puts "#{n}: #{content(a)} #{content(b)} #{content(c)} #{content(d)}"
+      end
       spa = content(a)
       spb = content(b)
       page_attr = {
