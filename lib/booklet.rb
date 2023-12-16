@@ -159,8 +159,7 @@ class Booklet
 
   def encipher(text)
     puts "encipher(#{text})" if @debug
-    c = Cipher.new(text)
-    [text, c.crypt.upcase, c.clue]
+    Cipher.new(text)
   end
 
   def content(n)
@@ -173,7 +172,7 @@ class Booklet
     elsif n >= 1 && n < (@total-@blank-2)
       q = @quote[(n-1)]
       raise "oops #{n}" if q.nil?
-      return q[1] # content
+      return q.crypt.upcase # content
     else
       return "Blank" # blank
     end
@@ -421,11 +420,11 @@ EOF
       fd.puts html_header("#{@base} Answer #{page_no}")
       fd.puts "<h2>#{@base} Page #{page_no}</h2>"
       fd.puts "<h3>Quote</h3>"
-      fd.puts "<br>#{q[0]}</br>"
+      fd.puts "<br>#{q.text}</br>"
       fd.puts "<h3>Encrypted</h3>"
-      fd.puts "<br>#{q[1]}</br>"
+      fd.puts "<br>#{q.crypt.upcase}</br>"
       fd.puts "<h3>Clue</h3>"
-      fd.puts long_clue(q[2])
+      fd.puts long_clue(q.clue)
       fd.puts html_trailer
     end
     "<a href=\"#{file}\">Answer</a>"
@@ -436,9 +435,9 @@ EOF
       fd.puts html_header(title)
       fd.puts "<table border='1'>"
       fd.puts "<tr><th>Page</th><th>Clue</th><th>Answer</th></tr>"
-      @quote.each_with_index do |a,idx|
+      @quote.each_with_index do |q,idx|
         page_no = idx+1
-        fd.puts html_row(page_no, short_clue(a[2]), html_answer_page(idx))
+        fd.puts html_row(page_no, short_clue(q.clue), html_answer_page(idx))
       end
       fd.puts "</table>"
       fd.puts html_trailer
