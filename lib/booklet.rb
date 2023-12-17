@@ -280,7 +280,7 @@ class Booklet
     d = c - 1
     pages.times do |n|
       sheet_no = (n/2)+1
-      side = n.even? ? "f" : "b"
+      side = n.even? ? "F" : "b" # case different to force F before b
       name = "#{@base}-#{sheet_no}-#{side}"
       puts "  #{n} #{name}"
       if @debug
