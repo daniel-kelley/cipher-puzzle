@@ -242,12 +242,7 @@ class Booklet
     end
   end
 
-  # +---+---+
-  # | a | b |
-  # +---+---+
-  # | d | c |
-  # +---+---+
-  def svg_four_up
+  def page_counts
     quotes = @quote.length
     text_pages = quotes + COVER_PAGES + ANSWER_PAGES
 
@@ -255,17 +250,37 @@ class Booklet
     if @blank != 0
       @blank = subpage_per_page - @blank
     end
-    @total = text_pages + @blank
-    pages = @total / subpage_per_page
+    total = text_pages + @blank
+    pages = total / subpage_per_page
+    if pages.odd?
+      # add some more blanks to make an even number of full pages
+      @blank += subpage_per_page
+      total += subpage_per_page
+      pages += 1
+    end
+
+    @total = total
     puts "SVG base:#{@base} pages:#{pages} quotes:#{quotes} text:#{text_pages} blank:#{@blank} total:#{@total}"
     raise 'oops' if (@total % subpage_per_page) != 0
+
+    pages
+  end
+
+
+  # +---+---+
+  # | a | b |
+  # +---+---+
+  # | d | c |
+  # +---+---+
+  def svg_four_up
+    pages = page_counts
     a = 0
     b = @total - 1
     c = @total / 2
     d = c - 1
     pages.times do |n|
       sheet_no = (n/2)+1
-      side = n.even? ? "f" : "b"
+      side = n.even? ? "F" : "b" # case different to force F before b
       name = "#{@base}-#{sheet_no}-#{side}"
       puts "  #{n} #{name}"
       if @debug
@@ -322,17 +337,7 @@ class Booklet
   # | a | b |
   # +---+---+
   def svg_two_up
-    quotes = @quote.length
-    text_pages = quotes + COVER_PAGES + ANSWER_PAGES
-
-    @blank = text_pages % subpage_per_page
-    if @blank != 0
-      @blank = subpage_per_page - @blank
-    end
-    @total = text_pages + @blank
-    pages = @total / subpage_per_page
-    puts "SVG base:#{@base} pages:#{pages} quotes:#{quotes} text:#{text_pages} blank:#{@blank} total:#{@total}"
-    raise 'oops' if (@total % subpage_per_page) != 0
+    pages = page_counts
     a = 0
     b = @total - 1
     pages.times do |n|
