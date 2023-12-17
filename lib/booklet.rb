@@ -34,11 +34,13 @@ class Booklet
         [  4.750,  0.000,  4.750,  0.250],
         [  6.375,  0.000,  6.375,  0.250],
         [  8.000,  0.000,  8.000,  0.250],
+        [  8.000, 10.750,  8.000, 11.000],
         # horizontal
         [  0.000,  0.500,  0.250,  0.500],
         [  0.000,  5.000,  0.250,  5.000],
         [  0.000,  6.000,  0.250,  6.000],
         [  0.000, 10.500,  0.250, 10.500],
+        [  8.250, 10.500,  8.500, 10.500],
       ]
 
     },
@@ -58,9 +60,11 @@ class Booklet
         [  5.000,  0.000,  5.000,  0.250],
         [  6.000,  0.000,  6.000,  0.250],
         [ 10.500,  0.000, 10.500,  0.250],
+        [ 10.500,  8.250, 10.500,  8.500],
         # horizontal
         [  0.000,  0.500,  0.250,  0.500],
         [  0.000,  8.000,  0.250,  8.000],
+        [ 10.750,  8.000, 11.000,  8.000],
       ]
 
     }
@@ -280,23 +284,23 @@ class Booklet
 
       svg = Victor::SVG.new(page_attr)
       #svg.text(spa,         x: 1.0, y: 1.0, style: char_style)
-      layout_quote(svg, spa,   0.5,    0.5)
+      layout_quote(svg, spa,   0.5,    0.75)
       layout_clue( svg, cla,   3.0,    4.5) if !cla.nil?
 
       svg.text("#{a}", x: 2.1, y: 5.0, style: char_style) # page
 
       #svg.text(spb,         x: 6.5, y: 1.0, style: char_style)
-      layout_quote(svg, spb,   4.7,    0.5)
+      layout_quote(svg, spb,   4.7,    0.75)
       layout_clue( svg, clb,   7.7,    4.5) if !clb.nil?
       svg.text("#{b}", x: 6.3, y: 5.0, style: char_style)
 
       #svg.text(spc,         x: 6.5, y: 6.5, style: char_style)
-      layout_quote(svg, spc,   4.7,    6.0)
+      layout_quote(svg, spc,   4.7,    6.25)
       layout_clue( svg, clc,   3.0,   10.0) if !clc.nil?
       svg.text("#{c}", x: 6.3, y: 10.5, style: char_style)
 
       #svg.text(spd,         x: 1.0, y: 6.5, style: char_style)
-      layout_quote(svg, spd,   0.5,    6.0)
+      layout_quote(svg, spd,   0.5,    6.25)
       layout_clue( svg, cld,   7.7,   10.0) if !cld.nil?
       svg.text("#{d}", x: 2.1, y: 10.5, style: char_style)
 
@@ -350,12 +354,12 @@ class Booklet
 
       svg = Victor::SVG.new(page_attr)
       #svg.text(spa,         x: 1.0, y: 1.0, style: char_style)
-      layout_quote(svg, spa,   0.5,    1.0)
+      layout_quote(svg, spa,   0.5,    0.75)
       layout_clue( svg, cla,   7.5,    4.0) if !cla.nil?
       svg.text("#{a}", x: 2.75, y: 8.0, style: char_style) # page
 
       #svg.text(spb,         x: 6.5, y: 1.0, style: char_style)
-      layout_quote(svg, spb,   6.0,    1.0)
+      layout_quote(svg, spb,   6.0,    0.75)
       layout_clue( svg, clb,  10.5,    7.5) if !clb.nil?
       svg.text("#{b}", x: 8.25, y: 8.0, style: char_style)
 
