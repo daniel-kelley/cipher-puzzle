@@ -11,13 +11,13 @@ require_relative 'booklet'
 class Encipher
 
   def initialize(s, idx)
-    report(s, Cipher.new, idx)
+    report(s, Cipher.new(s), idx)
   end
 
   def report(s, cipher, idx)
     puts "#{idx}. #{s}"
-    puts cipher.encipher(s).upcase
-    puts cipher.clue(s)
+    puts cipher.crypt.upcase
+    puts cipher.clue
     puts
   end
 

@@ -25,6 +25,7 @@ class Booklet
       :line_limit => 4.0,
       :subpage_per_page => 4,
       :char_style => "font-size:0.25;font-family:'URW Bookman'",
+      :clue_style => "font-size:0.12;font-family:'URW Bookman'",
       :guide => [
         # vertical
         [  0.500,  0.000,  0.500,  0.250],
@@ -50,6 +51,7 @@ class Booklet
       :line_limit => 4.5,
       :subpage_per_page => 2,
       :char_style => "font-size:0.25;font-family:'URW Bookman'",
+      :clue_style => "font-size:0.12;font-family:'URW Bookman'",
       :guide => [
         # vertical
         [  0.500,  0.000,  0.500,  0.250],
@@ -127,6 +129,10 @@ class Booklet
     LAYOUT[@layout][:char_style]
   end
 
+  def clue_style
+    LAYOUT[@layout][:clue_style]
+  end
+
   def line_limit
     LAYOUT[@layout][:line_limit]
   end
@@ -159,8 +165,7 @@ class Booklet
 
   def encipher(text)
     puts "encipher(#{text})" if @debug
-    c = Cipher.new
-    [text, c.encipher(text).upcase, c.clue(text)]
+    Cipher.new(text)
   end
 
   def content(n)
@@ -173,7 +178,7 @@ class Booklet
     elsif n >= 1 && n < (@total-@blank-2)
       q = @quote[(n-1)]
       raise "oops #{n}" if q.nil?
-      return q[1] # content
+      return [q.crypt.upcase,q.clue] # content
     else
       return "Blank" # blank
     end
@@ -211,6 +216,15 @@ class Booklet
     quote.each do |line|
       svg.text(line[0], x: line[1], y: line[2], style: char_style)
     end
+  end
+
+  def layout_clue(svg, text, x, y)
+    s = "Clue: " + short_clue(text)
+    svg.text(s,
+             transform:"translate(#{x}, #{y}) rotate(180)",
+             "text-anchor":"middle",
+             "dominant-baseline":"central",
+             style:clue_style)
   end
 
   def guide_marks(svg)
@@ -254,10 +268,10 @@ class Booklet
         puts "#{n}: #{a} #{b} #{c} #{d}"
         puts "#{n}: #{content(a)} #{content(b)} #{content(c)} #{content(d)}"
       end
-      spa = content(a)
-      spb = content(b)
-      spc = content(c)
-      spd = content(d)
+      spa,cla = content(a)
+      spb,clb = content(b)
+      spc,clc = content(c)
+      spd,cld = content(d)
       page_attr = {
         width: "#{page_width}in",
         height: "#{page_height}in",
@@ -267,19 +281,23 @@ class Booklet
       svg = Victor::SVG.new(page_attr)
       #svg.text(spa,         x: 1.0, y: 1.0, style: char_style)
       layout_quote(svg, spa,   0.5,    0.5)
+      layout_clue( svg, cla,   3.0,    4.5) if !cla.nil?
 
       svg.text("#{a}", x: 2.1, y: 5.0, style: char_style) # page
 
       #svg.text(spb,         x: 6.5, y: 1.0, style: char_style)
       layout_quote(svg, spb,   4.7,    0.5)
+      layout_clue( svg, clb,   7.7,    4.5) if !clb.nil?
       svg.text("#{b}", x: 6.3, y: 5.0, style: char_style)
 
       #svg.text(spc,         x: 6.5, y: 6.5, style: char_style)
       layout_quote(svg, spc,   4.7,    6.0)
+      layout_clue( svg, clc,   3.0,   10.0) if !clc.nil?
       svg.text("#{c}", x: 6.3, y: 10.5, style: char_style)
 
       #svg.text(spd,         x: 1.0, y: 6.5, style: char_style)
       layout_quote(svg, spd,   0.5,    6.0)
+      layout_clue( svg, cld,   7.7,   10.0) if !cld.nil?
       svg.text("#{d}", x: 2.1, y: 10.5, style: char_style)
 
       #svg.text("a:#{a} b:#{b} c:#{c} d:#{d}",
@@ -322,8 +340,8 @@ class Booklet
         puts "#{n}: #{a} #{b} #{c} #{d}"
         puts "#{n}: #{content(a)} #{content(b)} #{content(c)} #{content(d)}"
       end
-      spa = content(a)
-      spb = content(b)
+      spa,cla = content(a)
+      spb,clb = content(b)
       page_attr = {
         width: "#{page_width}in",
         height: "#{page_height}in",
@@ -333,11 +351,12 @@ class Booklet
       svg = Victor::SVG.new(page_attr)
       #svg.text(spa,         x: 1.0, y: 1.0, style: char_style)
       layout_quote(svg, spa,   0.5,    1.0)
-
+      layout_clue( svg, cla,   7.5,    4.0) if !cla.nil?
       svg.text("#{a}", x: 2.75, y: 8.0, style: char_style) # page
 
       #svg.text(spb,         x: 6.5, y: 1.0, style: char_style)
       layout_quote(svg, spb,   6.0,    1.0)
+      layout_clue( svg, clb,  10.5,    7.5) if !clb.nil?
       svg.text("#{b}", x: 8.25, y: 8.0, style: char_style)
 
       guide_marks(svg)
@@ -390,10 +409,10 @@ EOF
 
   def short_clue(clue)
     a = clue.split
-    "#{a[1]}"
+    a[1]
   end
 
-  def long_clue(clue)
+  def html_long_clue(clue)
     a = clue.split # title clue clear crypt
     s = "<br>#{a[0]} #{a[1]}</br>\n"
     n = 26
@@ -421,11 +440,11 @@ EOF
       fd.puts html_header("#{@base} Answer #{page_no}")
       fd.puts "<h2>#{@base} Page #{page_no}</h2>"
       fd.puts "<h3>Quote</h3>"
-      fd.puts "<br>#{q[0]}</br>"
+      fd.puts "<br>#{q.text}</br>"
       fd.puts "<h3>Encrypted</h3>"
-      fd.puts "<br>#{q[1]}</br>"
+      fd.puts "<br>#{q.crypt.upcase}</br>"
       fd.puts "<h3>Clue</h3>"
-      fd.puts long_clue(q[2])
+      fd.puts html_long_clue(q.clue)
       fd.puts html_trailer
     end
     "<a href=\"#{file}\">Answer</a>"
@@ -436,9 +455,9 @@ EOF
       fd.puts html_header(title)
       fd.puts "<table border='1'>"
       fd.puts "<tr><th>Page</th><th>Clue</th><th>Answer</th></tr>"
-      @quote.each_with_index do |a,idx|
+      @quote.each_with_index do |q,idx|
         page_no = idx+1
-        fd.puts html_row(page_no, short_clue(a[2]), html_answer_page(idx))
+        fd.puts html_row(page_no, short_clue(q.clue), html_answer_page(idx))
       end
       fd.puts "</table>"
       fd.puts html_trailer

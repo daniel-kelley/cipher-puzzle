@@ -8,9 +8,19 @@ class Cipher
 
   LETTERS = ('A'..'Z')
 
-  def initialize
+  attr_reader :text
+  attr_reader :crypt
+  attr_reader :clue
+
+
+  def initialize(text)
+    @text = text
     @clear, @subst = groomed_cipher
+    @crypt = encipher(@text)
+    @clue = _clue(text)
   end
+
+  private
 
   # flag ciphers with identities
   def funky(clear,subst)
@@ -70,7 +80,7 @@ class Cipher
   # pick a letter from s and the corresponding substitution
   # Could be made harder by picking the clue from the least frequently
   # used letters.
-  def clue(s)
+  def _clue(s)
     1000.times do
       n = rand(s.length)
       l = s[n]
