@@ -11,11 +11,13 @@ See example/buttercup.yml for the input format
 
 * Usage
 
+#+BEGIN_EXAMPLE
 Usage: ebooklet [options]
     -h, --help                       Issue this message
     -L, --layout [LAYOUT]            Layout
     -S, --seed [SEED]                Random Seed
     -d, --debug                      Debug
+#+END_EXAMPLE
 
 | Layout  | paper  | orientation |
 |---------+--------+-------------|
