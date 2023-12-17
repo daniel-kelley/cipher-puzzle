@@ -2,13 +2,45 @@ Cipher Puzzle
 
 Simple Cipher Puzzle Booklet Generator
 
-* description
+* Description
 
 Takes a YAML file of phrases to encipher and creates SVG files
 of enciphered output and HTML files of answers.
 
 See example/buttercup.yml for the input format
 
-* dependencies
+* Usage
+
+Usage: ebooklet [options]
+    -h, --help                       Issue this message
+    -L, --layout [LAYOUT]            Layout
+    -S, --seed [SEED]                Random Seed
+    -d, --debug                      Debug
+
+| Layout  | paper  | orientation |
+|---------+--------+-------------|
+| two_up  | ANSI A | landscape   |
+| four_up | ANSI A | portrait    |
+
+* Output
+
+The output consists of SVG files suitable for import into inkscape to
+create a booklet, and HTML files of hints and answer keys for web
+hosting.
+
+The booklet is in rough form - some adjustment for margin overflow is
+usually necessary.
+
+* Typical Workflow
+
+- Generate using ebooklet
+- Import SVG files into inkscape
+- Adjust output if necessary
+- Add front and back matter
+- Remove Margin Marks
+- Print and assemble booklet
+- Host answer key
+
+* Dependencies
 
 | victor | SVG generation |
