@@ -267,11 +267,12 @@ class Booklet
   end
 
 
-  # +---+---+
-  # | a | b |
-  # +---+---+
-  # | d | c |
-  # +---+---+
+  # +---+---+   +---+---+
+  # | b | a |   | a | b |
+  # +---+---+   +---+---+
+  # | c | d |   | c | d |
+  # +---+---+   +---+---+
+  # F page      b page
   def svg_four_up
     pages = page_counts
     a = 0
@@ -279,6 +280,11 @@ class Booklet
     c = @total / 2
     d = c - 1
     pages.times do |n|
+      ca,cb,cc,cd = a,b,d,c
+      if n.even?
+        # flip a,b
+        ca,cb,cc,cd = b,a,c,d
+      end
       sheet_no = (n/2)+1
       side = n.even? ? "F" : "b" # case different to force F before b
       name = "#{@base}-#{sheet_no}-#{side}"
@@ -287,10 +293,10 @@ class Booklet
         puts "#{n}: #{a} #{b} #{c} #{d}"
         puts "#{n}: #{content(a)} #{content(b)} #{content(c)} #{content(d)}"
       end
-      spa,cla = content(a)
-      spb,clb = content(b)
-      spc,clc = content(c)
-      spd,cld = content(d)
+      spa,cla = content(ca)
+      spb,clb = content(cb)
+      spc,clc = content(cc)
+      spd,cld = content(cd)
       page_attr = {
         width: "#{page_width}in",
         height: "#{page_height}in",
@@ -300,24 +306,24 @@ class Booklet
       svg = Victor::SVG.new(page_attr)
       #svg.text(spa,         x: 1.0, y: 1.0, style: char_style)
       layout_quote(svg, spa,   0.5,    0.75)
-      layout_clue( svg, cla,   3.0,    4.5) if !cla.nil?
+      layout_clue( svg, cla,   3.45,    4.5) if !cla.nil?
 
-      svg.text("#{a}", x: 2.1, y: 5.0, style: char_style) # page
+      svg.text("#{ca}", x: 2.1, y: 5.0, style: char_style) # page
 
       #svg.text(spb,         x: 6.5, y: 1.0, style: char_style)
       layout_quote(svg, spb,   4.7,    0.75)
       layout_clue( svg, clb,   7.7,    4.5) if !clb.nil?
-      svg.text("#{b}", x: 6.3, y: 5.0, style: char_style)
+      svg.text("#{cb}", x: 6.3, y: 5.0, style: char_style)
 
       #svg.text(spc,         x: 6.5, y: 6.5, style: char_style)
       layout_quote(svg, spc,   4.7,    6.25)
-      layout_clue( svg, clc,   3.0,   10.0) if !clc.nil?
-      svg.text("#{c}", x: 6.3, y: 10.5, style: char_style)
+      layout_clue( svg, clc,   3.45,   10.0) if !clc.nil?
+      svg.text("#{cc}", x: 6.3, y: 10.5, style: char_style)
 
       #svg.text(spd,         x: 1.0, y: 6.5, style: char_style)
       layout_quote(svg, spd,   0.5,    6.25)
       layout_clue( svg, cld,   7.7,   10.0) if !cld.nil?
-      svg.text("#{d}", x: 2.1, y: 10.5, style: char_style)
+      svg.text("#{cd}", x: 2.1, y: 10.5, style: char_style)
 
       #svg.text("a:#{a} b:#{b} c:#{c} d:#{d}",
       #         x: 1.0, y: 8.0, style: char_style)
